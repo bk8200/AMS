@@ -104,8 +104,7 @@ class WmrRos(Wmr):
         self.setWheelVel(-vv,-vv/2)
         print('Levo kolo:' + str(vv))
         '''
-        
-    print(str(self.subTag))
+
     sled_rob = 1# levi rob -1, desni rob 1
     
     if sled_rob == -1:
