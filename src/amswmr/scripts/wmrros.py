@@ -17,6 +17,7 @@ class WmrRos(Wmr):
     
     self._pubOdom = rospy.Publisher('odom', Odometry, queue_size=10)
     self._subCmdVel = rospy.Subscriber('cmd_vel', Twist, self._handleCmdVel)
+    self.subTag = rospy.Subscriber('tag',Int64,self._handleTag)
     self.encoderLOld = 0.0
     self.encoderROld = 0.0
     self.flag = 0
@@ -24,9 +25,13 @@ class WmrRos(Wmr):
     self.y = 0.0
     self.fi = 0.0
     self.old_error = 0.0
+    
   def _handleCmdVel(self, msg):
     self.setVel(msg.linear.x, msg.angular.z)
-  
+    
+  def _handleTag(self, msg):
+    print(msg)
+    
   def _handleEncoders(self, left, right, heading):
     if self.flag == 0:
       self.flag = 1
@@ -100,7 +105,7 @@ class WmrRos(Wmr):
         print('Levo kolo:' + str(vv))
         '''
         
-        
+    print(str(self.subTag))
     sled_rob = 1# levi rob -1, desni rob 1
     
     if sled_rob == -1:
@@ -119,6 +124,8 @@ class WmrRos(Wmr):
       Kvd = 0.5
       Kvp = 0.1
       
+      
+        
       ws = Kwp * line_error
       vs = Kvp #+ Kvd * (self.old_error - line_error)
     
@@ -128,10 +135,7 @@ class WmrRos(Wmr):
       self.old_error = line_error
     
     
-    
-    
-    
-    print('Leva, desna: ' + str(left) + ' ' + str(right) + ' Senzor: ' + str(sensors))
+    #print('Leva, desna: ' + str(left) + ' ' + str(right) + ' Senzor: ' + str(sensors))
         
         
         
