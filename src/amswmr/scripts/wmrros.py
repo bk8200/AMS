@@ -56,7 +56,7 @@ class WmrRos(Wmr):
             
     #print(self.x, heading, 360*gama/(2*pi), d)       
     #print( heading)
-    print(self.x, self.y, 360*self.fi/(2*pi), 360*gama/(2*pi), heading)
+    #print(self.x, self.y, 360*self.fi/(2*pi), 360*gama/(2*pi), heading)
     #print(left, right, heading, 360*gama/(2*pi))
     
     
@@ -74,21 +74,24 @@ class WmrRos(Wmr):
     self._pubOdom.publish(msg)
   
   def _handleLineSensor(self, left, right, sensors):
-      #  self.setVel(v, w)
-      #  self.setWheelVel(left, right)
-      
-      K = 1
+    # None, če ga ne zazna črte
+    #  self.setVel(v, w)
+    #  self.setWheelVel(left, right)
+    
+    K = 0.2
+    if left == None or right == None:
+      print('None')
+    else:
       line_error = (left + right) / 2
-      vv = K * line_error
-      
-      if line_error > 0
-        self.setWheelVel(0, vv)
-      else
-        self.setWheelVel(vv,  0)
-      
-      
-      
-        print('Leva, desna: ' + str(left) + ' ' + str(right) + ' Senzor: ' + str(sensors))
+      vv = K * abs(line_error) + 0.1
+        
+      if line_error > 0:
+        self.setWheelVel(-vv/2, -vv)
+        print('Desno kolo:' + str(vv))
+      else:
+        self.setWheelVel(-vv,  -vv/2)
+        print('Levo kolo:' + str(vv))
+    print('Leva, desna: ' + str(left) + ' ' + str(right) + ' Senzor: ' + str(sensors))
         
         
         
