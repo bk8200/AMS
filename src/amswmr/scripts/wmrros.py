@@ -23,6 +23,7 @@ class WmrRos(Wmr):
     self.x = 0.0
     self.y = 0.0
     self.fi = 0.0
+    self.old_error = 0.0
   def _handleCmdVel(self, msg):
     self.setVel(msg.linear.x, msg.angular.z)
   
@@ -77,20 +78,59 @@ class WmrRos(Wmr):
     # None, če ga ne zazna črte
     #  self.setVel(v, w)
     #  self.setWheelVel(left, right)
-    
-    K = 0.2
+    '''
+    K = 0.1
     if left == None or right == None:
       print('None')
     else:
       line_error = (left + right) / 2
-      vv = K * abs(line_error) + 0.1
+
         
+      if abs(line_error) < 0.1:
+        base_speed = 0.05
+      else:
+        base_speed = 0.0
+       
+      vv = K*abs(line_error) + base_speed
       if line_error > 0:
         self.setWheelVel(-vv/2, -vv)
         print('Desno kolo:' + str(vv))
       else:
-        self.setWheelVel(-vv,  -vv/2)
+        self.setWheelVel(-vv,-vv/2)
         print('Levo kolo:' + str(vv))
+        '''
+        
+        
+    sled_rob = 1# levi rob -1, desni rob 1
+    
+    if sled_rob == -1:
+      line_error = left;
+      
+      
+    elif sled_rob == 1:
+      line_error = right;
+    
+    if left == None or right == None:
+      print('None')
+    else:
+        
+      Kwp = 2
+      
+      Kvd = 0.5
+      Kvp = 0.1
+      
+      ws = Kwp * line_error
+      vs = Kvp #+ Kvd * (self.old_error - line_error)
+    
+      self.setVel(vs, ws)
+    
+      
+      self.old_error = line_error
+    
+    
+    
+    
+    
     print('Leva, desna: ' + str(left) + ' ' + str(right) + ' Senzor: ' + str(sensors))
         
         
