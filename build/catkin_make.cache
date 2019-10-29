@@ -1,0 +1,2 @@
+
+-DCATKIN_DEVEL_PREFIX=/home/pia/ros/work/devel -DCMAKE_INSTALL_PREFIX=/home/pia/ros/work/install -G Unix Makefiles
