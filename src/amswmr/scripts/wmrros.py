@@ -43,8 +43,8 @@ class WmrRos(Wmr):
       self.encoderROld = right
 
     max_gama = 8191.0
-    self.gama = - (heading - 4320.0) * 2.0 * pi / max_gama
-    
+    self.gama = - (heading - 3674.0) * 2.0 * pi / max_gama
+    #print(str(180*self.gama/pi) + '   ' +str(heading))
     
     dl = -(left - self.encoderLOld)
     dr = right - self.encoderROld
@@ -121,6 +121,7 @@ class WmrRos(Wmr):
 
       
     if sled_rob == 0:
+      '''
       x_ref = 0.5
       y_ref = 0.5
       
@@ -130,18 +131,46 @@ class WmrRos(Wmr):
       
       e_fi = wrapToPi(fi_ref - self.fi)
       
-      #print(str(dist_to))
+      K_fi = 1.0
+      
+      gama_ref = K_fi * e_fi
+      
+      K_gama = 2.0
+      ws = K_gama * ( gama_ref - self.gama )
+      
+      
+      Kv = 2.0
+      vs = Kv * dist_to / cos(self.gama)
+      
+      self.setVel(vs, ws)
+
+      
+      
+      
+      
+      
+      
+      '''
+      x_ref = 0.5
+      y_ref = 0.5
+      dist_to = sqrt((self.x -x_ref)**2+(self.y -y_ref)**2)
+      
+      fi_ref = atan2((y_ref-self.y),(x_ref-self.x))
+      
+      e_fi = wrapToPi(fi_ref - self.fi)
+      
+      print(str(180*e_fi/pi))
       
       v_max = 0.3
-      Kw = 0.5
-      Kgama = 0.2
-      Kv = 4.0
-      dist_min = 0.2
+      Kw = 2.0
+      Kgama = 1.0
+      Kv = 2.0
+      dist_min = 0.1
       brake = sqrt(dist_to/dist_min)
       if brake > 1:
         brake = 1
       
-      print(str(brake))
+      #print(str(brake))
       
       ws = brake*Kw * (e_fi) - Kgama * self.gama
       vs = brake*Kv * dist_to / cos(self.gama)
@@ -151,9 +180,7 @@ class WmrRos(Wmr):
       
       self.setVel(vs, ws)
            
-      
-      
-      
+     
       
       
       
@@ -163,8 +190,10 @@ class WmrRos(Wmr):
     
     elif left == None or right == None:
       print('None')
+      
     else:
-        
+      
+      
       Kwp = 2
       
       Kvd = 0.5
@@ -179,7 +208,7 @@ class WmrRos(Wmr):
     
       
       self.old_error = line_error
-    
+     
     
     #print('Leva, desna: ' + str(left) + ' ' + str(right) + ' Senzor: ' + str(sensors))
         
