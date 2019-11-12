@@ -28,6 +28,7 @@ class WmrRos(Wmr):
     self.fi = 0.0
     self.old_error = 0.0
     self.gama = 0.0
+    self.D = 0.1207
 
   
   def _handleCmdVel(self, msg):
@@ -55,13 +56,12 @@ class WmrRos(Wmr):
     d = (dl + dr) / 2.0
     
     konst = 110000.0
-    D = 0.1207
     
     d = d / konst
     
     self.x = self.x + d*cos(self.gama)*cos(self.fi)
     self.y = self.y + d*cos(self.gama)*sin(self.fi)
-    self.fi = self.fi + d*sin(self.gama) / D
+    self.fi = self.fi + d*sin(self.gama) / self.D
 
     #TODO Implement odometry
     
@@ -156,19 +156,33 @@ class WmrRos(Wmr):
       '''
       x_ref = 0.5
       y_ref = 0.5
+      v_max = 0.3
+      Kw = 2.5
+      Kgama = 4.0
+      Kv = 2.0
+      dist_min = 0.1
       dist_to = sqrt((self.x -x_ref)**2+(self.y -y_ref)**2)
       
       fi_ref = atan2((y_ref-self.y),(x_ref-self.x))
       
       e_fi = wrapToPi(fi_ref - self.fi)
       
-      print(str(180*e_fi/pi))
       
-      v_max = 0.3
-      Kw = 2.0
-      Kgama = 1.0
-      Kv = 2.0
-      dist_min = 0.1
+      w = Kw * (e_fi)
+      v = Kv * dist_to 
+      
+      if abs(v) > v_max:
+        v = sign(v) * v_max
+      
+      
+      vs = sqrt(w**2 * self.D**2 + v**2)
+      gama_ref = atan2(w*self.D, v)
+      
+      e_gama = wrapToPi(gama_ref - self.gama)
+      ws = Kgama * e_gama
+      #print(str(180*e_fi/pi))
+      
+ 
       brake = (dist_to/dist_min)**4
       if brake > 1:
         brake = 1
@@ -177,10 +191,10 @@ class WmrRos(Wmr):
       
       
       
-      ws = brake*Kw * (e_fi) - Kgama * self.gama
-      vs = brake*Kv * dist_to / cos(self.gama)
+      ws = brake*ws
+      vs = brake*vs*abs(cos(e_gama/2))
       
-      vs = v_max * vs / (abs(vs)+abs(ws))
+      #vs = v_max * vs / (abs(vs)+abs(ws))
       
       
       self.setVel(vs, ws)
