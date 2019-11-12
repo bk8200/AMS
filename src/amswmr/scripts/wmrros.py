@@ -44,6 +44,9 @@ class WmrRos(Wmr):
 
     max_gama = 8191.0
     self.gama = - (heading - 3674.0) * 2.0 * pi / max_gama
+    
+    self.gama = wrapToPi(self.gama)
+    
     #print(str(180*self.gama/pi) + '   ' +str(heading))
     
     dl = -(left - self.encoderLOld)
@@ -166,11 +169,13 @@ class WmrRos(Wmr):
       Kgama = 1.0
       Kv = 2.0
       dist_min = 0.1
-      brake = sqrt(dist_to/dist_min)
+      brake = (dist_to/dist_min)**4
       if brake > 1:
         brake = 1
       
-      #print(str(brake))
+      print(str(brake))
+      
+      
       
       ws = brake*Kw * (e_fi) - Kgama * self.gama
       vs = brake*Kv * dist_to / cos(self.gama)
