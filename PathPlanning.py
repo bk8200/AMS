@@ -17,24 +17,26 @@ class PathPlanning(object):
      #Preverimo ce je element ze na open listi
      #reverimo ce je nodeId enak 
     #Sestavimo path
+    
+    
     i = 0
     path = []
     closedList = {}
     #init - dodamo prvega na open listo
     openList = {startId : [0, 0]}
     for n in range(1000):
-
-      #POisce najmanjsi pathToHere v open list
+      
+      
+      #Poisce najmanjsi pathToHere v open list
       currentId = min(openList.items(), key=lambda x: x[1][1])[0]
 
       # Ce nismo dobili zadnjega
 
-      if goalId != currentId:
-
-        #Trenutnega damo na closed listo
+      if not openList.get(goalId,False):
+        #Trenutnega damo na closed listovalue
         closedList[currentId] = openList[currentId]
 
-        #Odstranimo trenutnega s open liste
+        #Odstranimo trenutnega z open liste
         openList.pop(currentId)
 
         #Dodamo sosede od trenutnega na open listo
@@ -42,21 +44,37 @@ class PathPlanning(object):
         for i in range(0,len(self.map.get(currentId))-1, 2):
 
           #Preverimo ce je element ze na open listi
-
-          #Dodamo novega ali popravljenega na open listo
-          openList[self.map[currentId][i]] = [currentId, #Tle dodamo nove Id na open listo
-          self.map[currentId][i+1] + closedList[currentId][1]] #izracunamo PathToHere
+          if self.map[currentId][i] != 0:
+            if (openList.get(self.map[currentId][i], [-1,1e10])[1]) >(self.map[currentId][i+1] + closedList[currentId][1]):
+            #Dodamo novega ali popravljenega na open listo
+              openList[self.map[currentId][i]] = [currentId, #Tle dodamo nove Id na open listo
+              self.map[currentId][i+1] + closedList[currentId][1]] #izracunamo PathToHere
 
       #Ce smo dobili zadnjega
       else:
         break
         
     #Sestavimo path
+    closedList[goalId] = openList[goalId]
+  
+    path.append(goalId)
     trenutniID = goalId
-    for n in range(len(closedList)):
+    while trenutniID != startId:
 
-      #for key,value in closedList.items():
-      find(closedLIst.items(), key=lambda x: x[1][0])
+      for key, value in closedList.items():
+        
+        if trenutniID == key:
+          tmp_value = value[0]
+      
+      path.append(tmp_value)
+      trenutniID = tmp_value
+          
+          
+    path.reverse()
+          
+      #trenutniID = trenutniKey
+
+      #find(closedLIst.items(), key=lambda x: x[1][0])
 
       #
       #path[n] = 
@@ -69,4 +87,4 @@ class PathPlanning(object):
 
 if __name__ == '__main__':
   pathPlanning = PathPlanning()
-  pathPlanning.findPath(2, 12)
+  pathPlanning.findPath(18, 4)
