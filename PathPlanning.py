@@ -81,10 +81,10 @@ class PathPlanning(object):
     if goalId in openList.keys():
       closedList[goalId] = openList[goalId]
 
-      path.append(goalId)
-      
-      trenutniID = goalId
-      while trenutniID != startId:
+      path.append(goalId)path
+      path
+      trenutniID = goalIdpath
+      while trenutniID != startId:path
 
         for key, value in closedList.items():
           
@@ -111,6 +111,34 @@ class PathPlanning(object):
 
 
     return path
+    
+  def generateActions(self, path):
+    actions = [] # A list of lists: [string(action), float(segmentLength), int(nextNodeID)]
+    for i in range(len(path)-1):
+      
+
+      curr_ID = path[i]
+      next_ID = path[i+1]
+
+      pot_naprej = self.map[curr_ID]
+      if next_ID == pot_naprej[0]:
+        action = 'levo'
+        segmentLength = pot_naprej[1]
+        nextNodeID = next_ID
+      elif next_ID == pot_naprej[2]:
+        action = 'desno'
+        segmentLength = pot_naprej[3]
+        nextNodeID = next_ID
+      elif next_ID == pot_naprej[4]:
+        action = 'sredina'
+        segmentLength = pot_naprej[5]
+        nextNodeID = next_ID
+
+      actions.apppend([string(action), float(segmentLength), int(nextNodeID)])
+      
+    
+    
+    return actions
 
 if __name__ == '__main__':
   pathPlanning = PathPlanning()
