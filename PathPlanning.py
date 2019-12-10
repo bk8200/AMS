@@ -24,7 +24,7 @@ class PathPlanning(object):
     closedList = {}
     #init - dodamo prvega na open listo
     openList = {startId : [0, 0]}
-    for n in range(1000):
+    while len(openList.items()) > 0:
       
       
       #Poisce najmanjsi pathToHere v open list
@@ -32,59 +32,87 @@ class PathPlanning(object):
 
       # Ce nismo dobili zadnjega
 
-      if not openList.get(goalId,False):
-        #Trenutnega damo na closed listovalue
-        closedList[currentId] = openList[currentId]
-
-        #Odstranimo trenutnega z open liste
-        openList.pop(currentId)
-
-        #Dodamo sosede od trenutnega na open listo
-        #Pri tem izracunamo se razdaljo do predhonega + razdaljo dodanih
-        for i in range(0,len(self.map.get(currentId))-1, 2):
-
-          #Preverimo ce je element ze na open listi
-          if self.map[currentId][i] != 0:
-            if (openList.get(self.map[currentId][i], [-1,1e10])[1]) >(self.map[currentId][i+1] + closedList[currentId][1]):
-            #Dodamo novega ali popravljenega na open listo
-              openList[self.map[currentId][i]] = [currentId, #Tle dodamo nove Id na open listo
-              self.map[currentId][i+1] + closedList[currentId][1]] #izracunamo PathToHere
-
-      #Ce smo dobili zadnjega
-      else:
+      if openList.get(goalId,False):
+        #Ce smo dobili zadnjega
         break
         
-    #Sestavimo path
-    closedList[goalId] = openList[goalId]
-  
-    path.append(goalId)
-    trenutniID = goalId
-    while trenutniID != startId:
+      #Trenutnega damo na closed listovalue
+      closedList[currentId] = openList[currentId]
 
-      for key, value in closedList.items():
+      #Odstranimo trenutnega z open liste
+      openList.pop(currentId)
+
+      #Dodamo sosede od trenutnega na open listo
+      #Pri tem izracunamo se razdaljo do predhonega + razdaljo dodanih
+      for i in range(0,len(self.map.get(currentId))-1, 2):
+
+        if self.map[currentId][i] == 0:
+          continue
         
-        if trenutniID == key:
-          tmp_value = value[0]
+        cenaDoSoseda = self.map[currentId][i+1]
+        cenaTrenutnega =  closedList[currentId][1]
+        #Ce je ze na closed listi
+        if self.map[currentId][i] in closedList.keys():
+          cenaZeNaClosed = (closedList.get(self.map[currentId][i])[1])
+          if cenaZeNaClosed > (cenaDoSoseda + cenaTrenutnega):
+            closedList.pop(self.map[currentId][i])
+            openList[self.map[currentId][i]] = [currentId, #Tle dodamo nove Id na open listo
+            cenaDoSoseda + cenaTrenutnega] #izracunamo PathToHere
+
+        #Preverimo ce je element ze na open listi
+        elif self.map[currentId][i] in openList.keys():
+          cenaZeNaOpen = (openList.get(self.map[currentId][i])[1])
+          if cenaZeNaOpen > (cenaDoSoseda + cenaTrenutnega):
+          #Dodamo novega ali popravljenega na open listo
+            openList[self.map[currentId][i]] = [currentId, #Tle dodamo nove Id na open listo
+            cenaDoSoseda + cenaTrenutnega] #izracunamo Patht[currentId][1]
+            
+        else:
+          openList[self.map[currentId][i]] = [currentId, #Tle dodamo nove Id na open listo
+            cenaDoSoseda + cenaTrenutnega] #izracunamo Patht[currentId][1]          
+
+          
+
+
+
+
+        
+    #Sestavimo path
+    if goalId in openList.keys():
+      closedList[goalId] = openList[goalId]
+
+      path.append(goalId)
       
-      path.append(tmp_value)
-      trenutniID = tmp_value
+      trenutniID = goalId
+      while trenutniID != startId:
+
+        for key, value in closedList.items():
           
-          
-    path.reverse()
-          
-      #trenutniID = trenutniKey
+          if trenutniID == key:
+            tmp_value = value[0]
+        
+        path.append(tmp_value)
+        trenutniID = tmp_value
+            
+            
+      path.reverse()
+            
+        #trenutniID = trenutniKey
 
-      #find(closedLIst.items(), key=lambda x: x[1][0])
+        #find(closedLIst.items(), key=lambda x: x[1][0])
 
-      #
-      #path[n] = 
+        #
+        #path[n] = 
 
 
-    #TODO Implement A* algorithm here ...
-    print 'Path from the node {} to the node {} is:'.format(startId, goalId)
-    print path
+      #TODO Implement A* algorithm here ...
+      print 'Path from the node {} to the node {} is:'.format(startId, goalId)
+      print path
+
+
     return path
 
 if __name__ == '__main__':
   pathPlanning = PathPlanning()
-  pathPlanning.findPath(18, 4)
+  pathPlanning.findPath(139, 131)
+
