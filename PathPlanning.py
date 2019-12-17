@@ -13,6 +13,7 @@ class PathPlanning(object):
     #print 'Right path from the node {} leads to the node {}, distance of the path is {}'.format(nodeId, self.map[nodeId][2], self.map[nodeId][3])
 
   def findPath(self, startId, goalId):
+    print('findPath')
     #TODO
      #Preverimo ce je element ze na open listi
      #reverimo ce je nodeId enak 
@@ -81,10 +82,9 @@ class PathPlanning(object):
     if goalId in openList.keys():
       closedList[goalId] = openList[goalId]
 
-      path.append(goalId)path
-      path
-      trenutniID = goalIdpath
-      while trenutniID != startId:path
+      path.append(goalId)
+      trenutniID = goalId
+      while trenutniID != startId:
 
         for key, value in closedList.items():
           
@@ -113,29 +113,40 @@ class PathPlanning(object):
     return path
     
   def generateActions(self, path):
+    print('generateActions')
     actions = [] # A list of lists: [string(action), float(segmentLength), int(nextNodeID)]
+    print(len(path))
     for i in range(len(path)-1):
-      
+      print(i)
 
+      
       curr_ID = path[i]
       next_ID = path[i+1]
 
       pot_naprej = self.map[curr_ID]
+      print(pot_naprej)
       if next_ID == pot_naprej[0]:
         action = 'levo'
         segmentLength = pot_naprej[1]
+        print('levo')
         nextNodeID = next_ID
       elif next_ID == pot_naprej[2]:
         action = 'desno'
         segmentLength = pot_naprej[3]
         nextNodeID = next_ID
+        print('desno')
       elif next_ID == pot_naprej[4]:
         action = 'sredina'
         segmentLength = pot_naprej[5]
         nextNodeID = next_ID
+        print('sredina')
 
-      actions.apppend([string(action), float(segmentLength), int(nextNodeID)])
+      print('actionspred')
+      actions.append([action, float(segmentLength), int(nextNodeID)])
+      print('actionspo')
       
+    print('actions') 
+    print actions
     
     
     return actions
