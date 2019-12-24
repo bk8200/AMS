@@ -21,6 +21,8 @@ class Localisation(object):
         self._subOdom = rospy.Subscriber('odom', Odometry, self._handleOdometry)
         self._subTag = rospy.Subscriber('tag', Int64, self._handleTag)
         self.tag = 0
+        self.phi = 0
+        self.q_0 = 0
 
         self.P = np.array([[10, 0, 0], [0, 10, 0], [0, 0, 10]])
         self.C = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
@@ -33,9 +35,11 @@ class Localisation(object):
 
     def _handleOdometry(self, msg):
         D = 0.1207
-        # x, y, phi = 0.0, 0.0, 0.0   #  x, y in phi dobimo iz handleTag?
+        # x, y, phi = 0.0, 0.0, 0.0   #  pravo x, y in phi pozicijo dobimo iz handleTag?
         delta_d = msg.twist.twist.linear.x
         gama = msg.twist.twist.angular.z
+        self.phi = self.phi + gama
+        phi = self.phi
 
         A = np.array([[1, 0, -delta_d * sin(phi) * cos(gama)], [0, 1, delta_d * cos(phi) * cos(gama)], [0, 0, 1]])
         F = np.array([[cos(phi) * cos(gama), -delta_d * cos(phi) * sin(gama)],
@@ -49,7 +53,9 @@ class Localisation(object):
 
         # Odometrija
         dq_0 = np.array([delta_d * cos(gama) * cos(phi)], [delta_d * cos(gama) * sin(phi)], [delta_d * sin(gama) / D])
-        q = q_0 + delta_d * dq_0  # ?????
+        self.q = self.q + delta_d * dq_0
+        q = self.q
+
         x = A * q
         P = A * self.P * A_T + F * self.Q * F_T
 
