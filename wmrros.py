@@ -43,8 +43,8 @@ class WmrRos(Wmr):
     
   def _handleTag(self, msg):
     print(msg)
-    
-    self.tagId = MTAG[msg.data]
+    self.tagId = MTAG.get(msg.data, -1)
+
     
   def _handleEncoders(self, left, right, heading):
     if self.flag == 0:
@@ -140,7 +140,7 @@ class WmrRos(Wmr):
           self.currentIdx = self.currentIdx + 1
           self.prepotovana_pot = 0.0     
           #self.sled_rob = self.actions[self.currentIdx][0]
-      elif self.actions[self.currentIdx][2] < 100: # Real
+      elif self.actions[self.currentIdx][2] < 100 and self.actions[self.currentIdx][2] > 0 : # Real
         if self.tagId == self.actions[self.currentIdx][2]:
           print('Real reached')
           self.currentIdx = self.currentIdx + 1
